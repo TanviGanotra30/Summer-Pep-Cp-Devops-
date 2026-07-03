@@ -179,3 +179,92 @@ class Solution {
         return true;
     }
 }
+
+
+
+Leetcode 785
+
+class Solution {
+    boolean dfs(int node,int color,int[][] graph,int[] col){
+        col[node]=color;
+        for(int i:graph[node]){
+            if(col[i]==-1){
+                if(!dfs(i,1-color,graph,col)) return false;
+            }else if(col[i]==color) return false;
+        }
+        return true;
+    }
+    public boolean isBipartite(int[][] graph) {
+        int V=graph.length;
+        int[] color=new int[V];
+        Arrays.fill(color,-1);
+        for(int i=0;i<V;i++){
+            if(color[i]==-1){
+                if(!dfs(i,0,graph,color)) return false;
+            }
+        }
+        return true;
+    }
+}
+
+
+Leetcode 3372
+
+class Solution {
+    int dfs(ArrayList<ArrayList<Integer>> adj,int node,int dis,boolean[] vis){
+        vis[node]=true;
+        if(dis==0) return 1;
+        if(dis<0) return 0;
+        int tn=1;
+
+        for(int i:adj.get(node)){
+            if(!vis[i]){
+                tn+=dfs(adj,i,dis-1,vis);
+            }
+        }
+        return tn;
+    }
+    public int[] maxTargetNodes(int[][] edges1, int[][] edges2, int k) {
+        int n=edges1.length+1;
+        int m=edges2.length+1;
+        ArrayList<ArrayList<Integer>> adj1=new ArrayList<>();
+        ArrayList<ArrayList<Integer>> adj2=new ArrayList<>();
+
+        for(int i=0;i<n;i++){
+            adj1.add(new ArrayList<>());
+        }
+        for(int i=0;i<m;i++){
+            adj2.add(new ArrayList<>());
+        }
+
+        for(int i=0;i<n-1;i++){
+            int u=edges1[i][0];
+            int v=edges1[i][1];
+
+            adj1.get(u).add(v);
+            adj1.get(v).add(u);
+        }
+
+        for(int i=0;i<m-1;i++){
+            int u=edges2[i][0];
+            int v=edges2[i][1];
+
+            adj2.get(u).add(v);
+            adj2.get(v).add(u);
+        }
+
+        int max2=0;
+        for(int i=0;i<m;i++){
+            boolean[] vis=new boolean[m];
+            max2=Math.max(max2,dfs(adj2,i,k-1,vis));
+        }
+
+        int[] res=new int[n];
+        for(int i=0;i<n;i++){
+            boolean[] vis=new boolean[n];
+            res[i]=max2+dfs(adj1,i,k,vis);
+        }
+
+        return res;
+    }
+}
