@@ -136,3 +136,46 @@ class Solution {
         return maxi;
     }
 }
+
+
+
+Leetcode 207
+
+class Solution {
+    boolean dfs(int node,List<List<Integer>> adj,boolean[] vis,boolean[] rec){
+        vis[node]=true;
+        rec[node]=true;
+
+        for(int i:adj.get(node)){
+            if(!vis[i] && !rec[i]){
+                if(dfs(i,adj,vis,rec)) return true;
+            }else if(vis[i] && rec[i]) return true;
+        }
+        rec[node]=false;
+        return false;
+    }
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        boolean[] vis=new boolean[numCourses];
+        boolean[] rec=new boolean[numCourses];
+
+        List<List<Integer>> ls=new ArrayList<>();
+        for(int i=0;i<numCourses;i++){
+            ls.add(new ArrayList<>());
+        }
+        for(int i=0;i<prerequisites.length;i++){
+            int u=prerequisites[i][0];
+            int v=prerequisites[i][1];
+
+            ls.get(v).add(u);
+        }
+
+        for(int i=0;i<numCourses;i++){
+            if(!vis[i]){
+                if(dfs(i,ls,vis,rec)){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+}
