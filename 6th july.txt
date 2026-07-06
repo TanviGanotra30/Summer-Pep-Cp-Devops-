@@ -136,3 +136,87 @@ class Solution {
         
     }
 }
+
+
+Leetcode 959
+
+class Solution {
+    int findPar(int[] arr,int node){
+        if(arr[node]==node) return node;
+        return arr[node]=findPar(arr,arr[node]);
+    }
+    void unionBySize(int[] arr,int[] sz,int u,int v){
+        int parU=findPar(arr,u);
+        int parV=findPar(arr,v);
+
+        if(parU==parV) return;
+
+        if(sz[parU]>sz[parV]){
+            arr[parV]=parU;
+            sz[parU]+=sz[parV];
+        }else{
+            arr[parU]=parV;
+            sz[parV]+=sz[parU];
+        }
+    }
+
+    public int regionsBySlashes(String[] grid) {
+
+        int n=grid.length;
+
+        int[] arr=new int[4*n*n];
+        int[] sz=new int[4*n*n];
+
+        for(int i=0;i<4*n*n;i++){
+            arr[i]=i;
+            sz[i]=1;
+        }
+        for(int i=0;i<n;i++){
+            for(int j=0;j<n;j++){
+                int first=4*n*i+4*j;
+                int second=first+1;
+                int third=first+2;
+                int fourth=first+3;
+
+                char ch=grid[i].charAt(j);
+                if(ch=='/'){
+                    unionBySize(arr,sz,first,fourth);
+                    unionBySize(arr,sz,second,third);
+                }
+                else if(ch=='\\'){
+                    unionBySize(arr,sz,first,second);
+                    unionBySize(arr,sz,third,fourth);
+                }
+                else{
+                    unionBySize(arr,sz,first,second);
+                    unionBySize(arr,sz,second,third);
+                    unionBySize(arr,sz,third,fourth);
+                }
+            }
+        }
+        for(int i=0;i<n;i++){
+            for(int j=0;j<n;j++){
+                int first=4*n*i+4*j;
+                int second=first+1;
+                int third=first+2;
+                int fourth=first+3;
+
+                if(j>0){
+                    int leftFirst=4*n*i+4*(j-1);
+                    unionBySize(arr,sz,fourth,leftFirst+1);
+                }
+                if(i>0){
+                    int upFirst=4*n*(i-1)+4*j;
+                    unionBySize(arr,sz,first,upFirst+2);
+                }
+            }
+        }
+
+        int ans=0;
+        for(int i=0;i<4*n*n;i++){
+            if(findPar(arr,i)==i)
+                ans++;
+        }
+        return ans;
+    }
+}
