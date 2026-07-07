@@ -124,3 +124,104 @@ class Solution {
         return second;
     }
 }
+
+
+Leetcode 1489
+
+
+class Solution {
+    int findPar(int[] arr,int node){
+        if(arr[node]==node) return node;
+        return arr[node]=findPar(arr,arr[node]);
+    }
+
+    void unionBySize(int[] arr,int[] sz,int u,int v){
+        int parU=findPar(arr,u);
+        int parV=findPar(arr,v);
+
+        if(parU==parV) return;
+
+        if(sz[parU]>sz[parV]){
+            arr[parV]=parU;
+            sz[parU]+=sz[parV];
+        }
+        else{
+            arr[parU]=parV;
+            sz[parV]+=sz[parU];
+        }
+    }
+
+    int kruskal(int n,int[][] edges,int skip,int mand){
+        int[] par=new int[n];
+        int[] sz=new int[n];
+        for(int i=0;i<n;i++){
+            par[i]=i;
+            sz[i]=1;
+        }
+
+        int totwt=0;
+        int cnt=0;
+
+        if(mand!=-1){
+            int u=edges[mand][0];
+            int v=edges[mand][1];
+            int wt=edges[mand][2];
+
+            unionBySize(par,sz,u,v);
+            totwt+=wt;
+            cnt++;
+        }
+
+        for(int i=0;i<edges.length;i++){
+            if(i==skip) continue;
+            int u=edges[i][0];
+            int v=edges[i][1];
+            int wt=edges[i][2];
+
+            int parU=findPar(par,u);
+            int parV=findPar(par,v);
+
+            if(parU==parV) continue;
+
+            unionBySize(par,sz,u,v);
+            totwt+=wt;
+            cnt++;
+        }
+        if(cnt!=n-1) return Integer.MAX_VALUE;
+        return totwt;
+    }
+
+    public List<List<Integer>> findCriticalAndPseudoCriticalEdges(int n, int[][] edges) {
+
+        int[][] newEdges=new int[edges.length][4];
+        for(int i=0;i<edges.length;i++){
+            newEdges[i][0]=edges[i][0];
+            newEdges[i][1]=edges[i][1];
+            newEdges[i][2]=edges[i][2];
+            newEdges[i][3]=i;
+        }
+        edges=newEdges;
+
+        Arrays.sort(edges,(a,b)->Integer.compare(a[2],b[2]));
+        int normalKruskalWt=kruskal(n,edges,-1,-1);
+        List<Integer> critical=new ArrayList<>();
+        List<Integer> pseudo=new ArrayList<>();
+
+        for(int i=0;i<edges.length;i++){
+            int criticalKruskalWt=kruskal(n,edges,i,-1);
+            if(criticalKruskalWt>normalKruskalWt){
+                critical.add(edges[i][3]);
+            }
+            else{
+                int pseudoKruskalWt=kruskal(n,edges,-1,i);
+                if(pseudoKruskalWt==normalKruskalWt){
+                    pseudo.add(edges[i][3]);
+                }
+            }
+        }
+        List<List<Integer>> ans=new ArrayList<>();
+        ans.add(critical);
+        ans.add(pseudo);
+        return ans;
+    }
+}
