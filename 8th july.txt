@@ -1,0 +1,40 @@
+Leetcode 127
+
+class Solution {
+    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        HashSet<String> set=new HashSet<>();
+        for(String st:wordList){
+            set.add(st);
+        }
+        if(!set.contains(endWord)) return 0;
+
+        Queue<String> q=new LinkedList<>();
+        q.offer(beginWord);
+        int l=1;
+        while(!q.isEmpty()){
+            int sz=q.size();
+            while(sz-->0){
+                String curr=q.poll();
+
+                if(curr.equals(endWord)) return l;
+                char[] arr=curr.toCharArray();
+                for(int i=0;i<arr.length;i++){
+                    char org=arr[i];
+                    for(char ch='a';ch<='z';ch++){
+                        arr[i]=ch;
+                        String newWord=new String(arr);
+                        if(set.contains(newWord)){
+                            q.offer(newWord);
+                            set.remove(newWord);
+                        }
+                    }
+                    arr[i]=org;
+                }
+            }
+            l++;
+        }
+        return 0;
+        
+    }
+}
+
