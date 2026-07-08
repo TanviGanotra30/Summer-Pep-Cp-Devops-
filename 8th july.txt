@@ -38,3 +38,73 @@ class Solution {
     }
 }
 
+
+
+GFG Count strongly connected
+
+class Solution {
+    void dfs(int node, boolean[] vis, Stack<Integer> st, ArrayList<ArrayList<Integer>> adj) {
+        vis[node] = true;
+        for (int i : adj.get(node)) {
+            if (!vis[i]) {
+                dfs(i, vis, st, adj);
+            }
+        }
+        st.push(node);
+    }
+
+    void dfsRev(int node, boolean[] vis, ArrayList<ArrayList<Integer>> revAdj) {
+        vis[node]=true;
+        for (int i : revAdj.get(node)) {
+            if (!vis[i]) {
+                dfsRev(i, vis, revAdj);
+            }
+        }
+    }
+    public int kosaraju(int V, int[][] edges) {
+        boolean[] vis=new boolean[V];
+        ArrayList<ArrayList<Integer>> adj=new ArrayList<>();
+        for(int i=0;i<V;i++){
+            adj.add(new ArrayList<>());
+        }
+        for(int i=0;i<edges.length;i++){
+            int u=edges[i][0];
+            int v=edges[i][1];
+            
+            adj.get(u).add(v);
+        }
+        Stack<Integer> st=new Stack<>();
+        for(int i=0;i<V;i++){
+            if(!vis[i]){
+                dfs(i,vis,st,adj);
+            }
+        }
+        
+        ArrayList<ArrayList<Integer>> revadj=new ArrayList<>();
+        for(int i=0;i<V;i++){
+            revadj.add(new ArrayList<>());
+        }
+        for(int i=0;i<edges.length;i++){
+            int u=edges[i][0];
+            int v=edges[i][1];
+            
+            revadj.get(v).add(u);
+        }
+        for(int i=0;i<V;i++){
+            if(!vis[i]){
+                dfs(i,vis,st,revadj);
+            }
+        }
+       vis = new boolean[V];
+        int cnt = 0;
+        while (!st.isEmpty()) {
+            int curr = st.pop();
+            if (!vis[curr]) {
+                cnt++;
+                dfsRev(curr, vis, revadj);
+            }
+        }
+
+        return cnt; 
+    }
+}
