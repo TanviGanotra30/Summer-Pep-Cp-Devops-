@@ -1,0 +1,69 @@
+Leetcode 403
+
+class Solution {
+    HashMap<Integer,Integer> mpp=new HashMap<>();
+    HashMap<String,Boolean> dp=new HashMap<>();
+
+    boolean f(int[] stones,int posInd,int jump,int n){
+        if(posInd==n-1) return true;
+
+        String key=posInd+"-"+jump;
+        if(dp.containsKey(key)) return dp.get(key);
+
+        int newPos=stones[posInd];
+        boolean cR=false;
+
+        if(jump-1>0&&mpp.containsKey(newPos+jump-1)){
+            int newPosInd=mpp.get(newPos+jump-1);
+            cR=cR||f(stones,newPosInd,jump-1,n);
+        }
+
+        if(mpp.containsKey(newPos+jump)){
+            int newPosInd=mpp.get(newPos+jump);
+            cR=cR||f(stones,newPosInd,jump,n);
+        }
+
+        if(mpp.containsKey(newPos+jump+1)){
+            int newPosInd=mpp.get(newPos+jump+1);
+            cR=cR||f(stones,newPosInd,jump+1,n);
+        }
+
+        dp.put(key,cR);
+        return cR;
+    }
+
+    public boolean canCross(int[] stones){
+        int n=stones.length;
+        if(stones[1]!=1) return false;
+
+        for(int i=0;i<n;i++) mpp.put(stones[i],i);
+
+        return f(stones,1,1,n);
+    }
+}
+
+
+Leetcode 416
+class Solution {
+    public boolean canPartition(int[] nums) {
+        int total=0;
+        for(int i=0;i<nums.length;i++){
+            total+=nums[i];
+        }
+
+        if(total%2!=0) return false;
+        int tr=total/2;
+        boolean[] dp=new boolean[tr+1];
+        dp[0]=true;
+
+        for(int num:nums){
+            for(int i=tr;i>=num;i--){
+                if(dp[i-num]){
+                    dp[i]=true;
+                }
+            }
+        }
+        return dp[tr];
+
+    }
+}
