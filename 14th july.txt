@@ -1,0 +1,43 @@
+Leetcode 516
+
+class Solution {
+    int f(String s1,String s2,int i,int j,int[][] dp){
+        if(i==s1.length() || j==s2.length()) return 0;
+        if(dp[i][j]!=-1) return dp[i][j];
+        if(s1.charAt(i)==s2.charAt(j)) return dp[i][j]=1+f(s1,s2,i+1,j+1,dp);
+        return dp[i][j]=Math.max(f(s1,s2,i+1,j,dp),f(s1,s2,i,j+1,dp));
+    }
+    public int longestPalindromeSubseq(String s) {
+        StringBuilder sb=new StringBuilder();
+        int[][] dp=new int[s.length()][s.length()];
+        for(int i=0;i<s.length();i++){
+            sb.append(s.charAt(i));
+        }
+
+        for(int i=0;i<s.length();i++){
+            Arrays.fill(dp[i],-1);
+        }
+        String str=sb.reverse().toString();
+        return f(s,str,0,0,dp);
+    }
+}
+
+
+
+Leetcode 1143 
+
+class Solution {
+    int f(String s1,String s2,int i,int j,int[][] dp){
+        if(i==s1.length() || j==s2.length()) return 0;
+        if(dp[i][j]!=-1) return dp[i][j];
+        if(s1.charAt(i)==s2.charAt(j)) return dp[i][j]=1+f(s1,s2,i+1,j+1,dp);
+        return dp[i][j]=Math.max(f(s1,s2,i+1,j,dp),f(s1,s2,i,j+1,dp));
+    }
+    public int longestCommonSubsequence(String text1, String text2) {
+        int[][] dp=new int[text1.length()][text2.length()];
+        for(int i=0;i<text1.length();i++){
+            Arrays.fill(dp[i],-1);
+        }
+        return f(text1,text2,0,0,dp);
+    }
+}
