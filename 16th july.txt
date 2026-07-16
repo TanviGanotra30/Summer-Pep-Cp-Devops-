@@ -119,3 +119,51 @@ class Solution {
         return ans;
     }
 }
+
+
+Leetcode 2827
+
+class Solution {
+    Integer[][][][][][] dp;
+
+    int f(int ind,int tight,int lz,int odd,int even,int rem,int k,String s){
+        if(ind==s.length()){
+            return (lz==0 && odd==even && rem==0)?1:0;
+        }
+
+        if(dp[ind][tight][lz][odd][even][rem]!=null){
+            return dp[ind][tight][lz][odd][even][rem];
+        }
+        int ul=tight==1?s.charAt(ind)-'0':9;
+        int ans=0;
+        for(int d=0;d<=ul;d++){
+            int ntight=(tight==1 && d==ul)?1:0;
+
+            if(lz==1 && d==0){
+                ans+=f(ind+1,ntight,1,odd,even,0,k,s);
+            }else{
+                int nrem=(rem*10+d)%k;
+                if(d%2==0){
+                    ans+=f(ind+1,ntight,0,odd,even+1,nrem,k,s);
+                }else{
+                    ans+=f(ind+1,ntight,0,odd+1,even,nrem,k,s);
+                }
+            }
+        }
+        return dp[ind][tight][lz][odd][even][rem]=ans;
+    }
+
+    int solve(int x,int k){
+        if(x<=0) return 0;
+        String s=String.valueOf(x);
+        int n=s.length();
+
+        dp=new Integer[n][2][2][11][11][k];
+
+        return f(0,1,1,0,0,0,k,s);
+    }
+
+    public int numberOfBeautifulIntegers(int low,int high,int k) {
+        return solve(high,k)-solve(low-1,k);
+    }
+}
