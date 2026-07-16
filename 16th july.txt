@@ -1,0 +1,51 @@
+Leetcode 2719
+
+class Solution {
+    int[][][][] dp;
+    int mod=(int)1e9+7;
+
+    int f(int ind,int tight,int lz,int ds,String s,int min_sum,int max_sum){
+        if(ds>max_sum) return 0;
+        if(ind==s.length()){
+            return (ds>=min_sum && ds<=max_sum)?1:0;
+        }
+        if(dp[ind][tight][lz][ds]!=-1) return dp[ind][tight][lz][ds];
+        int ul=tight==1?s.charAt(ind)-'0':9;
+        int ans=0;
+        for(int i=0;i<=ul;i++){
+            if(lz==1 && i==0){
+                ans=(ans+f(ind+1,tight==1&&i==ul?1:0,1,ds,s,min_sum,max_sum))%mod;
+            }else{
+                ans=(ans+f(ind+1,tight==1&&i==ul?1:0,0,ds+i,s,min_sum,max_sum))%mod;
+            }
+        }
+        return dp[ind][tight][lz][ds]=ans;
+    }
+
+    public int count(String num1,String num2,int min_sum,int max_sum) {
+
+        dp=new int[23][2][2][401];
+        for(int i=0;i<23;i++)
+            for(int j=0;j<2;j++)
+                for(int k=0;k<2;k++)
+                    Arrays.fill(dp[i][j][k],-1);
+
+        int ansNum1=f(0,1,1,0,num1,min_sum,max_sum);
+
+        dp=new int[23][2][2][401];
+        for(int i=0;i<23;i++)
+            for(int j=0;j<2;j++)
+                for(int k=0;k<2;k++)
+                    Arrays.fill(dp[i][j][k],-1);
+
+        int ansNum2=f(0,1,1,0,num2,min_sum,max_sum);
+        int sum1=0;
+        for(int i=0;i<num1.length();i++){
+            sum1+=num1.charAt(i)-'0';
+        }
+        if(sum1>=min_sum && sum1<=max_sum){
+            return ((ansNum2-ansNum1+1)%mod+mod)%mod;
+        }
+        return ((ansNum2-ansNum1)%mod+mod)%mod;
+    }
+}
