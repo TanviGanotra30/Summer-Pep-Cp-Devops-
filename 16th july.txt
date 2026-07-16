@@ -49,3 +49,73 @@ class Solution {
         return ((ansNum2-ansNum1)%mod+mod)%mod;
     }
 }
+
+
+Leetcode 2801
+
+class Solution {
+    int mod=(int)1e9+7;
+    int[][][][] dp;
+    int f(int ind,int tight,int lz,int prev,String s){
+        if(ind==s.length()){
+            return lz==1?0:1;
+        }
+        if(dp[ind][tight][lz][prev]!=-1){
+            return dp[ind][tight][lz][prev];
+        }
+        int ul=tight==1?s.charAt(ind)-'0':9;
+        long ans=0;
+        for(int d=0;d<=ul;d++){
+            int ntight=(tight==1 && d==ul)?1:0;
+
+            if(lz==1 && d==0){
+                ans=(ans+f(ind+1,ntight,1,10,s))%mod;
+            }
+            else if(lz==1){
+                ans=(ans+f(ind+1,ntight,0,d,s))%mod;
+            }
+            else{
+                if(Math.abs(prev-d)==1){
+                    ans=(ans+f(ind+1,ntight,0,d,s))%mod;
+                }
+            }
+        }
+        return dp[ind][tight][lz][prev]=(int)ans;
+    }
+
+    public int countSteppingNumbers(String low,String high) {
+        dp=new int[101][2][2][11];
+        for(int i=0;i<101;i++){
+            for(int j=0;j<2;j++){
+                for(int k=0;k<2;k++){
+                    Arrays.fill(dp[i][j][k],-1);
+                }
+            }
+        }
+        int highAns=f(0,1,1,10,high);
+        dp=new int[101][2][2][11];
+        for(int i=0;i<101;i++){
+            for(int j=0;j<2;j++){
+                for(int k=0;k<2;k++){
+                    Arrays.fill(dp[i][j][k],-1);
+                }
+            }
+        }
+
+        int lowAns=f(0,1,1,10,low);
+        boolean flag=true;
+        for(int i=1;i<low.length();i++){
+            if(Math.abs((low.charAt(i)-'0')-(low.charAt(i-1)-'0'))!=1){
+                flag=false;
+                break;
+            }
+        }
+
+        if(low.equals("0")) flag=true;
+        int ans=(highAns-lowAns+mod)%mod;
+        if(flag){
+            ans=(ans+1)%mod;
+        }
+        return ans;
+    }
+}
