@@ -1,0 +1,58 @@
+Leetcode 307 
+
+class NumArray {
+    int[] segTree;
+    int st;
+    int end;
+    int ind;
+    public NumArray(int[] nums) {
+        segTree=new int[4*nums.length];
+        ind=0;
+        st=0;
+        end=nums.length-1;
+        if(nums.length>0)
+        build(nums,ind,st,end);
+    }
+    void build(int[] nums,int ind,int st,int end){
+    if(st==end){
+        segTree[ind]=nums[st];
+        return;
+    }
+
+    int mid=st+(end-st)/2;
+
+    build(nums,2*ind+1,st,mid);
+    build(nums,2*ind+2,mid+1,end);
+
+    segTree[ind]=segTree[2*ind+1]+segTree[2*ind+2];
+}
+    public void sol(int[] segTree,int ind,int st,int end,int i,int val){
+        if(st==end){
+            segTree[ind]=val;
+            return;
+        }
+        int mid=st+(end-st)/2;
+
+        if(i<=mid) sol(segTree,2*ind+1,st,mid,i,val);
+        else sol(segTree,2*ind+2,mid+1,end,i,val);
+
+        segTree[ind]=segTree[2*ind+1]+segTree[2*ind+2];
+    }
+    public void update(int index, int val) {
+        sol(segTree,ind,st,end,index,val); 
+    }
+    
+    public int query(int[] segTree,int ind,int l,int r,int st,int end){
+        if(l<=st && r>=end) return segTree[ind];
+        if(end<l || st>r) return 0;
+
+        int mid=st+(end-st)/2;
+        int lsq=query(segTree,2*ind+1,l,r,st,mid);
+        int rsq=query(segTree,2*ind+2,l,r,mid+1,end);
+
+        return lsq+rsq;
+    }
+    public int sumRange(int left, int right) {
+        return query(segTree,ind,left,right,st,end);
+    }
+}
